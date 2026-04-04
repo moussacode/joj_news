@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}JOJ News{% endblock %}</title>
+
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+</head>
+
+<body class="bg-light">
+
+<!--  HEADER -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/"> JOJ News</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="/">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/articles/">Articles</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/categories/">Catégories</a>
+        </li>
+       
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!--  CONTENU -->
+<div class="container mt-4">
+  {% block content %}
+  {% endblock %}
+</div>
+
+<!-- 🔻 FOOTER -->
+<footer class="bg-dark text-light mt-5 py-4">
+  <div class="container text-center">
+
+    <p class="mb-1"> 2026 JOJ News - Tous droits réservés </p>
+
+    <small>
+      Plateforme d’actualités développée avec Django
+    </small>
+
+  </div>
+</footer>
+
+</body>
+</html>

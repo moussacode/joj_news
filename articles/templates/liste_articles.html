@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% load static %} 
+
+{% block title %}Listes des articles {% endblock %} 
+
+{% block content %}
+{% for a in liste_article  %}
+
+<div class="col-lg-4 mb-5">
+       
+        <article class="card">
+          <div class="post-slider slider-sm slick-initialized slick-slider">
+            <div class="slick-list draggable"><img src="{{ a.image.url }}" class="card-img-top" alt="..."></div>
+          </div>
+          
+          <div class="card-body">
+            <h3 class="h4 mb-3"><a class="post-title" href="{% url 'detail_article' pk=a.id %}">{{a.titre}}</a></h3>
+            <ul class="card-meta list-inline"
+              <li class="list-inline-item">
+                <i class="ti-calendar"></i>{{a.date_publication}}
+              </li>
+              <li class="list-inline-item">
+                <ul class="card-meta-tag list-inline">
+                   <p class="card-text"><span class="badge rounded-pill bg-primary">{{a.categorie}}</span></p>
+   
+                  
+                </ul>
+              </li>
+            </ul>
+            <p>{{a.contenu}} …</p>
+            <a href="{% url 'detail_article' pk=a.id %}" class="btn btn-outline-primary">Voir Plus</a>
+          </div>
+        </article>
+      </div>
+{% endfor %}
+
+{% endblock  %}
