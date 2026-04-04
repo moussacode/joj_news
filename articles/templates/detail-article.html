@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% load static %} 
+
+{% block title %}Detail {% endblock %} 
+
+{% block content %}
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+
+      
+      <div class="col-lg-9">
+        <article>
+
+          {% if article.image %}
+            <img src="{{ article.image.url }}" class="img-fluid mb-4">
+          {% endif %}
+
+          <h1 class="h2">{{ article.titre }}</h1>
+
+          <ul class="list-inline mb-3">
+            <li class="list-inline-item">
+               {{ article.date_publication|date:"d M Y" }}
+            </li>
+            <li class="list-inline-item">
+               {{ article.categorie.nom }}
+            </li>
+          </ul>
+
+          <div>
+            {{ article.contenu }}
+          </div>
+
+        </article>
+      </div>
+
+      <!-- COMMENTAIRES -->
+      <div class="col-lg-9 mt-5">
+
+        <h3>Commentaires ({{ commentaires.count }})</h3>
+
+        {% for commentaire in commentaires %}
+          <div class="border p-3 mb-3">
+            <strong>{{ commentaire.nom }}</strong><br>
+            <small>{{ commentaire.date|date:"d M Y H:i" }}</small>
+            <p>{{ commentaire.contenu }}</p>
+          </div>
+        {% empty %}
+          <p>Aucun commentaire pour cet article.</p>
+        {% endfor %}
+
+        <!-- FORMULAIRE -->
+        <h4 class="mt-4">Ajouter un commentaire</h4>
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <input type="text" name="nom" class="form-control" placeholder="Ton nom" required>
+          </div>
+
+          <div class="mb-3">
+            <textarea name="comment" class="form-control" rows="5" placeholder="Ton commentaire" required></textarea>
+          </div>
+
+          <button class="btn btn-primary">Envoyer</button>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}
