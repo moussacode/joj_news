@@ -7,6 +7,7 @@
   {% load bootstrap5 %}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
+  {% load static %}
 </head>
 
 <body class="bg-light">
@@ -14,7 +15,10 @@
 <!--  HEADER -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="/"> JOJ News</a>
+    <a class="navbar-brand" href="/"> <img src="{% static 'images/logo.png' %}" 
+             alt="JOJ News"
+             class="img-fluid rounded-4 shadow-lg"
+             style="max-height: 50px; object-fit: cover;"> <span class="fs-6 fw-light"> Jeux Olympique de la Jeunesse</span></a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
