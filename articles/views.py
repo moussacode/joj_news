@@ -1,6 +1,7 @@
 from django.shortcuts import render , get_object_or_404, redirect
 from . import models
 from django.core.paginator import Paginator
+from .form import ArticleFilterForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 # Create your views here.
@@ -11,13 +12,26 @@ def home (request):
 def liste_article (request):
     liste_article = models.Article.objects.all()
 
+    form = ArticleFilterForm(request.GET or None)
+    
+    if form.is_valid():
+        titre = form.cleaned_data.get('titre')
+        categorie = form.cleaned_data.get('categorie')
+        
+
+        if titre:
+            liste_article = liste_article.filter(titre__icontains=titre)
+
+        if categorie:
+            liste_article = liste_article.filter(categorie=categorie)
+
     pagination = Paginator(liste_article,2)
 
     page_number = request.GET.get('page')
     article = pagination.get_page(page_number) 
 
     contexte ={
-       
+        'form':form,
         'liste_article': article,
     }
     
