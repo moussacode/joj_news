@@ -1,6 +1,8 @@
-from django.shortcuts import render , get_object_or_404
+from django.shortcuts import render , get_object_or_404, redirect
 from . import models
 from django.core.paginator import Paginator
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 # Create your views here.
 
 def home (request):
@@ -28,3 +30,17 @@ def detail_article (request,pk):
         'article':article
     }
     return render(request,"detail-article.html",contexte)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = False  # IMPORTANT
+            user.save()
+            login(request, user)
+            return redirect('/')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
