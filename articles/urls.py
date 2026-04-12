@@ -7,4 +7,6 @@ urlpatterns = [
     path('articles/', views.liste_article, name='liste_article'),
     path('detail/<int:pk>/', views.detail_article, name="detail_article" ),
     path('register/', register, name='register'),
+    path('comment/<int:pk>/edit/', views.CommentUpdateView.as_view(), name='comment_edit'),  
+
 ]

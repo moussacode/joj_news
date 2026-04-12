@@ -1,5 +1,5 @@
 from django import forms
-from .models import Categorie
+from .models import Categorie, Commentaire
 
 class ArticleFilterForm(forms.Form):
     titre = forms.CharField(
@@ -11,3 +11,12 @@ class ArticleFilterForm(forms.Form):
         required=False,
         empty_label="Toutes les categories"
     )
+
+class CommentaireForm(forms.ModelForm):
+    class Meta:
+        model = Commentaire
+        fields = ['contenu']
+        widgets = {
+            'contenu': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Ajouter un commentaire...'}),
+        }
+    

@@ -1,10 +1,16 @@
 from django.shortcuts import render , get_object_or_404, redirect
 from . import models
 from django.core.paginator import Paginator
-from .form import ArticleFilterForm
+from .form import ArticleFilterForm, CommentaireForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import UpdateView, DeleteView
+from django.urls import reverse_lazy
 # Create your views here.
+
+
+
 
 def home (request):
     return render(request ,'home.html')
@@ -40,9 +46,23 @@ def liste_article (request):
 def detail_article (request,pk):
     
     article = get_object_or_404(models.Article,pk=pk) 
+    commentaires = article.commentaires.all().order_by('-date_commentaire')
+    form = CommentaireForm()
+    if request.method == 'POST':
+        form = CommentaireForm(request.POST)
+        if form.is_valid():
+            commentaire = form.save(commit=False)
+            commentaire.article = article
+            commentaire.user = request.user
+            commentaire.save()
+            return redirect('detail_article', pk=article.pk)
+
     contexte={
-        'article':article
+        'article':article,
+        'commentaires': commentaires,
+        'form': form
     }
+
     return render(request,"detail-article.html",contexte)
 
 def register(request):
@@ -58,3 +78,16 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = models.Commentaire
+    template_name = 'commentaire_form.html'
+    fields = ['contenu']
+    def get_success_url(self):
+        article = self.get_object().article
+        return reverse_lazy('detail_article', kwargs={'pk': article.pk})
+
+    def test_func(self):
+        commentaire = self.get_object()
+        return self.request.user == commentaire.user
+    
