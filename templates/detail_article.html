@@ -1,0 +1,50 @@
+<h1>{{ article.titre }}</h1>
+<p>{{ article.contenu }}</p>
+
+<h2>Commentaires</h2>
+
+{% for commentaire in commentaires %}
+    <p><strong>{{ commentaire.utilisateur }}</strong> : {{ commentaire.contenu }}</p>
+{% endfor %}
+
+<h3>Ajouter un commentaire</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Envoyer</button>
+</form>
+
+<h1>{{ article.titre }}</h1>
+<p>{{ article.contenu }}</p>
+
+<hr>
+
+<h2>Commentaires</h2>
+
+{% for commentaire in commentaires %}
+    <div>
+        <strong>{{ commentaire.utilisateur }}</strong>
+        <p>{{ commentaire.contenu }}</p>
+
+        {% if commentaire.utilisateur == user %}
+            <a href="{% url 'modifier_commentaire' commentaire.id %}">Modifier</a>
+            <a href="{% url 'supprimer_commentaire' commentaire.id %}">Supprimer</a>
+        {% endif %}
+    </div>
+    <hr>
+{% empty %}
+    <p>Aucun commentaire</p>
+{% endfor %}
+
+<h3>Ajouter un commentaire</h3>
+
+{% if user.is_authenticated %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Envoyer</button>
+</form>
+{% else %}
+<p>Connectez-vous pour commenter</p>
+{% endif %}

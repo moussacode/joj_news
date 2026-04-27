@@ -1,9 +1,10 @@
 from django.shortcuts import render , get_object_or_404, redirect
 from . import models
 from django.core.paginator import Paginator
-from .form import ArticleFilterForm
+from .form import ArticleFilterForm, CommentaireForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+
 # Create your views here.
 
 def home (request):
@@ -40,8 +41,24 @@ def liste_article (request):
 def detail_article (request,pk):
     
     article = get_object_or_404(models.Article,pk=pk) 
+    commentaires = article.commentaires.all()
+    
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            form = CommentaireForm(request.POST)
+            if form.is_valid():
+                commentaire = form.save(commit=False)
+                commentaire.utilisateur = request.user
+                commentaire.article = article
+            commentaire.save()
+            return redirect('article_detail', pk=article.pk)
+        else:
+            # rediriger vers login si pas connecté
+            return redirect('login')
     contexte={
-        'article':article
+        'article': article,
+        'commentaires': commentaires,
+        'form': form
     }
     return render(request,"detail-article.html",contexte)
 
@@ -58,3 +75,58 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+
+
+# 🔹 Afficher article + ajouter commentaire
+def detail_article(request, id):
+    article = get_object_or_404(models.Article, id=id)
+    commentaires = article.commentaires.filter(actif=True)
+
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            form = CommentaireForm(request.POST)
+            if form.is_valid():
+                commentaire = form.save(commit=False)
+                commentaire.utilisateur = request.user
+                commentaire.article = article
+                commentaire.save()
+                return redirect('detail_article', id=article.id)
+        else:
+            return redirect('login')
+    else:
+        form = CommentaireForm()
+
+    return render(request, 'detail_article.html', {
+        'article': article,
+        'commentaires': commentaires,
+        'form': form
+    })
+
+
+# 🔹 Modifier commentaire
+def modifier_commentaire(request, id):
+    commentaire = get_object_or_404(models.Commentaire, id=id)
+
+    if commentaire.utilisateur != request.user:
+        return redirect('detail_article', id=commentaire.article.id)
+
+    if request.method == 'POST':
+        form = CommentaireForm(request.POST, instance=commentaire)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_article', id=commentaire.article.id)
+    else:
+        form = CommentaireForm(instance=commentaire)
+
+    return render(request, 'modifier_commentaire.html', {'form': form})
+
+
+# 🔹 Supprimer commentaire
+def supprimer_commentaire(request, id):
+    commentaire = get_object_or_404(models.Commentaire, id=id)
+
+    if commentaire.utilisateur != request.user:
+        return redirect('detail_article', id=commentaire.article.id)
+
+    commentaire.delete()
+    return redirect('detail_article', id=commentaire.article.id)
